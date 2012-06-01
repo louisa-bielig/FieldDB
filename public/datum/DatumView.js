@@ -5,13 +5,11 @@ define("datum/DatumView", [
     "text!datum/datum.handlebars",
     "datum_status/DatumStatus",
     "datum_status/DatumStatusView",
-    "datum_menu/DatumMenu",
-    "datum_menu/DatumMenuView",
     "datum_tag/DatumTag",
     "datum_tag/DatumTagView",
     "datum_field/DatumField",
     "datum_field/DatumFieldView"
-], function(Backbone, Handlebars, Datum, datumTemplate, DatumStatus,DatumStatusView, DatumMenu,DatumMenuView,DatumTag, DatumTagView, DatumField, DatumFieldView) {
+], function(Backbone, Handlebars, Datum, datumTemplate, DatumStatus,DatumStatusView,DatumTag, DatumTagView, DatumField, DatumFieldView) {
     var DatumView = Backbone.View.extend(
     /** @lends DatumView.prototype */
     {
@@ -23,7 +21,6 @@ define("datum/DatumView", [
          */
         initialize : function() {
         	this.statusview = new DatumStatusView({model: this.model.get("status")});
-            this.menuview = new DatumMenuView({model: this.model.get("datumMenu")});
             this.tagview = new DatumTagView({model: this.model.get("datumTag")});
             this.fieldview = new DatumFieldView({model: this.model.get("datumField")});
          
@@ -37,7 +34,6 @@ define("datum/DatumView", [
         template: Handlebars.compile(datumTemplate),
         
         statusview: null,  
-        menuview: null,
         tagview: null,
         fieldview: null,
         
@@ -48,7 +44,6 @@ define("datum/DatumView", [
 
         render : function() {
         	Handlebars.registerPartial("datum_status", this.statusview.template(this.statusview.model.toJSON()) );
-        	Handlebars.registerPartial("datum_menu", this.menuview.template(this.menuview.model.toJSON()) );
         	Handlebars.registerPartial("datum_tag", this.tagview.template(this.tagview.model.toJSON()) );
         	Handlebars.registerPartial("datum_field", this.fieldview.template(this.model.toJSON()) );
 

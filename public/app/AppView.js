@@ -79,6 +79,13 @@ define("app/AppView", [
 			
 
 			
+		},
+		
+		seeCorpus: function(){
+				app.datums = new Datums();
+				app.dataListView = new DataListView({collection: Datums});
+				app.datumsView = new DatumsView({collection: Datums});
+
 		}
 	});
 

@@ -4,14 +4,11 @@ define("datum/DatumsView", [
     "datum/Datums"
 ], function(Backbone, Handlebars, Datums) {
     var SearchView = Backbone.View.extend(
-    /** @lends DatumLatexView.prototype */
+    /** @lends DatumView.prototype */
     {
         /**
-         * @class DatumLatex shows up as an item in the Data List as a result of  
-        *        search. As a default a DatumLatex item has three fields (utterance, 
-        *        gloss, translation) showing up in the Data List. Morphemes are 
-        *        aligned with corresponding gloss as in Latex, but this is not a 
-        *        true Latex format (just looking like Latex). 
+         * @class DatumView retrieves the datums from couch or pouch or whatever DB we are using, then it helps us navigate through the collection.  
+         * This is where all the functions associated with the pages are housed, i.e. gotoPage, nextResultPage, previousResultPage etc. 
          *
          * @extends Backbone.View
          * @constructs
@@ -21,15 +18,75 @@ define("datum/DatumsView", [
 
        // model : Datum,
 
-        classname : "datum",
+        events: {
+			'click a.servernext': 'nextResultPage',
+			'click a.serverprevious': 'previousResultPage',
+			'click a.orderUpdate': 'updateSortBy',
+			'click a.serverlast': 'gotoLast',
+			'click a.page': 'gotoPage',
+			'click a.serverfirst': 'gotoFirst',
+			'click a.serverpage': 'gotoPage',
+			'click .serverhowmany a': 'changeCount'
 
-        template: Handlebars.compile(datum_latexTemplate),
-        	
-        render : function() {
-            $(this.el).html(this.template(this.model.toJSON()));
-            return this;
-        }
-    });
+		},
 
-    return DatumLatexView;
+		tagName: 'aside',
+
+		template: _.template($('#tmpServerPagination').html()),
+
+		initialize: function () {
+
+			this.collection.on('reset', this.render, this);
+			this.collection.on('change', this.render, this);
+
+			this.$el.appendTo('#pagination');
+
+		},
+
+		render: function () {
+			var html = this.template(this.collection.info());
+			this.$el.html(html);
+		},
+
+		updateSortBy: function (e) {
+			e.preventDefault();
+			var currentSort = $('#sortByField').val();
+			this.collection.updateOrder(currentSort);
+		},
+
+		nextResultPage: function (e) {
+			e.preventDefault();
+			this.collection.requestNextPage();
+		},
+
+		previousResultPage: function (e) {
+			e.preventDefault();
+			this.collection.requestPreviousPage();
+		},
+
+		gotoFirst: function (e) {
+			e.preventDefault();
+			this.collection.goTo(this.collection.information.firstPage);
+		},
+
+		gotoLast: function (e) {
+			e.preventDefault();
+			this.collection.goTo(this.collection.information.lastPage);
+		},
+
+		gotoPage: function (e) {
+			e.preventDefault();
+			var page = $(e.target).text();
+			this.collection.goTo(page);
+		},
+
+		changeCount: function (e) {
+			e.preventDefault();
+			var per = $(e.target).text();
+			this.collection.howManyPer(per);
+		}
+
+	});
+
+    return DatumView;
 }); 
